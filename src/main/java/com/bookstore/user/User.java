@@ -1,4 +1,35 @@
 package com.bookstore.user;
 
-public class User {
+import com.bookstore.book.Book;
+import com.bookstore.common.BaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
+public class User extends BaseEntity {
+    private String firstName;
+    private String lastName;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+    private String password;
+    private String imageUrl;
+    private LocalDate birthOfDate;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Book> books;
 }
