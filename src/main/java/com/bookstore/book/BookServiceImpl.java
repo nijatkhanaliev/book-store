@@ -40,8 +40,6 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public PageResponse<BookResponse> getAllArchivedBookByOwner(int page, int size) {
-
-
         return null;
     }
 
