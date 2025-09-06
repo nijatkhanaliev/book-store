@@ -54,4 +54,5 @@ public class BookServiceImpl implements BookService {
     public void makeBookShareable(Long bookId) {
 
     }
+
 }
