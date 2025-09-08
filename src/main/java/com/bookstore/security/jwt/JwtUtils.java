@@ -1,5 +1,6 @@
 package com.bookstore.security.jwt;
 
+import com.bookstore.config.cache.RedisService;
 import com.bookstore.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -8,13 +9,14 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Service
@@ -30,7 +32,7 @@ public class JwtUtils {
     @Value("${application.jwt.refresh-expiration-ms}")
     private Long refreshExpirationMs;
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisService redisService;
 
     private SecretKey secretKey;
 
@@ -44,16 +46,16 @@ public class JwtUtils {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getUserRole());
         String accessToken = createToken(user.getEmail(), claims, accessExpirationMs);
+        redisService.saveAccessToken(accessToken, accessExpirationMs, user.getEmail());
 
-
-
-        return null;
+        return accessToken;
     }
 
     public String generateRefreshToken(User user) {
         String refreshToken = createToken(user.getEmail(), null, refreshExpirationMs);
+        redisService.saveRefreshToken(refreshToken, refreshExpirationMs, user.getEmail());
 
-        return null;
+        return refreshToken;
     }
 
     private String createToken(String userEmail, Map<String, Object> claims, Long expirationMs) {
@@ -70,7 +72,7 @@ public class JwtUtils {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public String extractClaim(String token, Function<Claims, String> resolver) {
+    public <T> T extractClaim(String token, Function<Claims, T> resolver) {
         Claims claims = extractAllClaim(token);
 
         return resolver.apply(claims);
@@ -84,9 +86,20 @@ public class JwtUtils {
                 .getPayload();
     }
 
-    public boolean tokenIsValid(String token) {
-        return false;
+    public boolean isAccessTokenValid(String token, UserDetails userDetails) {
+        return Objects.equals(extractUserEmail(token), userDetails.getUsername()) &&
+                isTokenExpired(token) &&
+                redisService.isAccessTokenValid(userDetails.getUsername(), token);
     }
 
+    public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
+        return Objects.equals(extractUserEmail(token), userDetails.getUsername()) &&
+                isTokenExpired(token) &&
+                redisService.isRefreshTokenValid(userDetails.getUsername(), token);
+    }
+
+    private boolean isTokenExpired(String token) {
+        return !extractClaim(token, Claims::getExpiration).before(new Date());
+    }
 
 }
