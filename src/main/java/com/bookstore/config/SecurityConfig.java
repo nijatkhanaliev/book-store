@@ -18,12 +18,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return  http.csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement((s)-> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests((req)->
-                            req.requestMatchers("/auth/**").permitAll()
-                                    .anyRequest().authenticated()
-                        )
+        return http.csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement((s) -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests((req) ->
+                        req.requestMatchers("/auth/**").permitAll()
+                                .anyRequest().authenticated()
+                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
