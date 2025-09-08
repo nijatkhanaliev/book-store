@@ -35,6 +35,9 @@ public class User extends BaseEntity {
     private LocalDate birthOfDate;
 
     @Enumerated(EnumType.STRING)
+    private UserStatus userStatus;
+
+    @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
     @OneToMany(mappedBy = "owner")
