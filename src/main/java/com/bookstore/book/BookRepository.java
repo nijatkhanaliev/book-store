@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Query("""
-           select b from Book b where b.owner.id != :id
-        """)
+               select b from Book b where b.owner.id != :id
+            """)
     Page<Book> findAll(Pageable pageable, @Param("id") Long currentUserId);
 }
