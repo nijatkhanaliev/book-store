@@ -1,3 +1,7 @@
 spring:
   application:
     name: book-store
+
+application:
+  jwt:
+    secret-key-str: sdnkasjdnasdknsadnsakdnsakdnsakdndasdasd
