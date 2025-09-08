@@ -38,13 +38,13 @@ public class RedisService {
         return redisTemplate.opsForValue().get(tokenType + ":" + userEmail);
     }
 
-    public boolean isAccessTokenValid(String userEmail, String expectedValue){
+    public boolean isAccessTokenValid(String userEmail, String expectedValue) {
         String accessToken = redisTemplate.opsForValue().get("access:" + userEmail);
 
         return Objects.equals(accessToken, expectedValue);
     }
 
-    public boolean isRefreshTokenValid(String userEmail, String expectedValue){
+    public boolean isRefreshTokenValid(String userEmail, String expectedValue) {
         String refreshToken = redisTemplate.opsForValue().get("refresh:" + userEmail);
 
         return Objects.equals(refreshToken, expectedValue);
