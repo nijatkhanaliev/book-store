@@ -5,4 +5,5 @@ spring:
 application:
   jwt:
     secret-key-str: sdnkasjdnasdknsadnsakdnsakdnsakdndasdasd
-    access-expiration-ms: 180000
+    access-expiration-ms: 300000
+    refresh-expiration-ms: 86400000
