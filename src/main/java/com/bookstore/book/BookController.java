@@ -9,6 +9,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class BookController {
 
-//    public ResponseEntity<>
 
 }
