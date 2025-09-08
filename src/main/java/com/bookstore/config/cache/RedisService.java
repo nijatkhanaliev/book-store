@@ -4,45 +4,59 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class RedisService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public void saveAccessToken(String token, Long accessDurationMs){
-        saveToken("access", token, accessDurationMs, TimeUnit.MILLISECONDS);
+    public void saveAccessToken(String token, Long accessDurationMs, String userEmail) {
+        saveToken("access", userEmail, token, accessDurationMs);
     }
 
-    public void saveRefreshToken(String token, Long refreshDurationMs){
-        saveToken("refresh", token,refreshDurationMs, TimeUnit.MILLISECONDS);
+    public void saveRefreshToken(String token, Long refreshDurationMs, String userEmail) {
+        saveToken("refresh", userEmail, token, refreshDurationMs);
     }
 
-    public void saveToken(String tokenType, String token, Long durationMs, TimeUnit timeUnit){
-        redisTemplate.opsForValue().set(tokenType+"Token", token, durationMs, timeUnit);
+    private void saveToken(String tokenType, String userEmail, String token, Long durationMs) {
+        String key = tokenType + ":" + userEmail;
+        redisTemplate.opsForValue().set(key, token, durationMs, TimeUnit.MILLISECONDS);
     }
 
-    public String getAccessToken(){
-        return getToken("access");
+    public String getAccessToken(String userEmail) {
+        return getToken("access", userEmail);
     }
 
-    public String getRefreshToken(){
-        return getToken("refresh");
+    public String getRefreshToken(String userEmail) {
+        return getToken("refresh", userEmail);
     }
 
-    public String getToken(String tokenType){
-       return String.valueOf(redisTemplate.opsForValue().get(tokenType+"Token"));
+    private String getToken(String tokenType, String userEmail) {
+        return redisTemplate.opsForValue().get(tokenType + ":" + userEmail);
     }
 
-    public void invalidateTokens(){
-        invalidateToken("access");
-        invalidateToken("refresh");
+    public boolean isAccessTokenValid(String userEmail, String expectedValue){
+        String accessToken = redisTemplate.opsForValue().get("access:" + userEmail);
+
+        return Objects.equals(accessToken, expectedValue);
     }
 
-    public void invalidateToken(String tokenType){
-        redisTemplate.delete(tokenType+"Token");
+    public boolean isRefreshTokenValid(String userEmail, String expectedValue){
+        String refreshToken = redisTemplate.opsForValue().get("refresh:" + userEmail);
+
+        return Objects.equals(refreshToken, expectedValue);
+    }
+
+    public void invalidateTokens(String userEmail) {
+        invalidateToken("access", userEmail);
+        invalidateToken("refresh", userEmail);
+    }
+
+    public void invalidateToken(String tokenType, String userEmail) {
+        redisTemplate.delete(tokenType + ":" + userEmail);
     }
 
 }
