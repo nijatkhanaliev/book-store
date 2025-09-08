@@ -4,6 +4,8 @@ import com.bookstore.book.Book;
 import com.bookstore.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -31,6 +33,9 @@ public class User extends BaseEntity {
     private String password;
     private String imageUrl;
     private LocalDate birthOfDate;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
 
     @OneToMany(mappedBy = "owner")
     private List<Book> books;
