@@ -1,2 +1,7 @@
-package com.bookstore.user;public interface UserService {
+package com.bookstore.user;
+
+public interface UserService {
+
+    void createBookStore();
+
 }
