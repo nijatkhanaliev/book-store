@@ -1,2 +1,4 @@
-package com.bookstore.user;public class UserServiceImpl {
+package com.bookstore.user;
+
+public class UserServiceImpl {
 }
