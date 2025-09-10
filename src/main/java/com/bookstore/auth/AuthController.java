@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -19,11 +21,21 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(authRequest));
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid RegisterRequest registerRequest) {
+        authService.register(registerRequest);
+        return ResponseEntity.status(CREATED).build();
+    }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(){
+        authService.logout();
+        return ResponseEntity.ok().build();
+    }
 
-        return null;
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(@Valid RefreshTokenRequest request){
+        return ResponseEntity.ok(authService.refresh(request));
     }
 
 }
