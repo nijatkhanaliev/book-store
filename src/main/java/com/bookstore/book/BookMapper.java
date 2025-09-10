@@ -13,4 +13,6 @@ public interface BookMapper {
 
     List<BookResponse> toBookResponses(Page<Book> books);
 
+    Book toBook(BookRequest bookRequest);
+
 }

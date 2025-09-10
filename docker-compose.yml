@@ -1,0 +1,15 @@
+services:
+  redis:
+    container_name: redis-book
+    image: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  maildev:
+    image: maildev/maildev:2.1.0
+    container_name: maildev
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    restart: unless-stopped

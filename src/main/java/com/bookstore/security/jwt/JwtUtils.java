@@ -10,7 +10,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class JwtUtils {
 
@@ -86,16 +86,16 @@ public class JwtUtils {
                 .getPayload();
     }
 
-    public boolean isAccessTokenValid(String token, UserDetails userDetails) {
-        return Objects.equals(extractUserEmail(token), userDetails.getUsername()) &&
+    public boolean isAccessTokenValid(String token, String userEmail) {
+        return Objects.equals(extractUserEmail(token), userEmail) &&
                 isTokenExpired(token) &&
-                redisService.isAccessTokenValid(userDetails.getUsername(), token);
+                redisService.isAccessTokenValid(userEmail, token);
     }
 
-    public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
-        return Objects.equals(extractUserEmail(token), userDetails.getUsername()) &&
+    public boolean isRefreshTokenValid(String token, String userEmail) {
+        return Objects.equals(extractUserEmail(token), userEmail) &&
                 isTokenExpired(token) &&
-                redisService.isRefreshTokenValid(userDetails.getUsername(), token);
+                redisService.isRefreshTokenValid(userEmail, token);
     }
 
     private boolean isTokenExpired(String token) {
