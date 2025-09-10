@@ -38,7 +38,7 @@ public class BookServiceImpl implements BookService {
         book.setOwner(currentUser);
         bookRepository.save(book);
 
-        // TODO SEND EMAIL TO ADMIN APPROVE BOOK
+        // TODO SEND NOTIFICATION TO ADMIN APPROVE BOOK
 
     }
 
