@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SellerApplicationCreatedEvent {
     private Long userId;
-    private String userName;
+    private String userFullName;
 }
