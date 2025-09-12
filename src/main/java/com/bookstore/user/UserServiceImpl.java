@@ -1,10 +1,15 @@
 package com.bookstore.user;
 
+import com.bookstore.messaging.MessageProducer;
+import com.bookstore.notification.Notification;
+import com.bookstore.notification.NotificationRepository;
 import com.bookstore.notification.SellerApplicationCreatedEvent;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.bookstore.config.RabbitMQConfig.NOTIFICATION_EXCHANGE;
 import static com.bookstore.security.SecurityUtil.getCurrentUser;
@@ -14,11 +19,13 @@ import static com.bookstore.user.UserStatus.PENDING;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private final NotificationRepository notificationRepository;
 
     private final UserRepository userRepository;
-    private final RabbitTemplate rabbitTemplate;
+    private final MessageProducer messageProducer;
 
     @Override
+    @Transactional
     public void createBookStore() {
         User currentUser = getCurrentUser(userRepository);
         log.info("Creating book store by userId {}", currentUser.getId());
@@ -29,9 +36,18 @@ public class UserServiceImpl implements UserService {
         var sellerApplicationCreatedEvent = new SellerApplicationCreatedEvent(currentUser.getId(),
                 currentUser.getFullName());
 
-        rabbitTemplate.convertAndSend(NOTIFICATION_EXCHANGE, "notification.seller",
+        User admin = userRepository.findByEmail("admin@gmail.com")
+                .orElseThrow(() -> new EntityNotFoundException("Admin not found"));
+
+        log.info("Creating new Notification for admin, adminId {}", admin.getId());
+        Notification notification = new Notification();
+        notification.setMessage("Approve new Book seller");
+        notification.setRecipientId(admin.getId());
+        notificationRepository.save(notification);
+
+        messageProducer.send(NOTIFICATION_EXCHANGE, "notification.seller",
                 sellerApplicationCreatedEvent);
-        rabbitTemplate.convertAndSend(NOTIFICATION_EXCHANGE, "email.seller",
+        messageProducer.send(NOTIFICATION_EXCHANGE, "email.seller",
                 sellerApplicationCreatedEvent);
     }
 
