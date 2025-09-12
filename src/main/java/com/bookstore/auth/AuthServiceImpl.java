@@ -18,6 +18,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import static com.bookstore.user.UserStatus.ACTIVE;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -51,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
         }
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setUserStatus(ACTIVE);
         userRepository.save(user);
     }
 
