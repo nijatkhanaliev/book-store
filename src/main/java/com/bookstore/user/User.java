@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.beans.Transient;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -37,6 +38,9 @@ public class User extends BaseEntity {
     private Boolean isActive;
 
     @Enumerated(EnumType.STRING)
+    private UserStatus userStatus;
+
+    @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
     @OneToMany(mappedBy = "owner")
@@ -45,6 +49,11 @@ public class User extends BaseEntity {
     @PrePersist
     void init(){
         this.isActive = false;
+    }
+
+    @Transient
+    public String getFullName(){
+        return this.firstName + " " + this.lastName;
     }
 
 }
