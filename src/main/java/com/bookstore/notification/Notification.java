@@ -19,6 +19,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class Notification extends BaseEntity {
     private String message;
+//    private Object object;
     private boolean read;
     private Long recipientId;
 
