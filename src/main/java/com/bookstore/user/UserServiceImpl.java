@@ -4,10 +4,10 @@ import com.bookstore.messaging.MessageProducer;
 import com.bookstore.notification.Notification;
 import com.bookstore.notification.NotificationRepository;
 import com.bookstore.notification.SellerApplicationCreatedEvent;
+import com.bookstore.security.SecurityUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,8 +36,7 @@ public class UserServiceImpl implements UserService {
         var sellerApplicationCreatedEvent = new SellerApplicationCreatedEvent(currentUser.getId(),
                 currentUser.getFullName());
 
-        User admin = userRepository.findByEmail("admin@gmail.com")
-                .orElseThrow(() -> new EntityNotFoundException("Admin not found"));
+        User admin = SecurityUtil.findAdmin(userRepository);
 
         log.info("Creating new Notification for admin, adminId {}", admin.getId());
         Notification notification = new Notification();
