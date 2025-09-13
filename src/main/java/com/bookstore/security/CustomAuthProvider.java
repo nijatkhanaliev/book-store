@@ -4,6 +4,7 @@ import com.bookstore.exception.InvalidInputException;
 import com.bookstore.user.User;
 import com.bookstore.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomAuthProvider implements AuthenticationProvider {
