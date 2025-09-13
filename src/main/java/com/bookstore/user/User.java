@@ -48,7 +48,7 @@ public class User extends BaseEntity {
 
     @PrePersist
     void init(){
-        this.isActive = false;
+        this.isActive = true;
     }
 
     @Transient
